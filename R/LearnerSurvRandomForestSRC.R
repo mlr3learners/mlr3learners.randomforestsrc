@@ -121,10 +121,7 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
     #' The importance scores are extracted from the model slot `variable.importance`.
     #' @return Named `numeric()`.
     importance = function() {
-      if (is.null(self$model)) {
-        mlr3misc::stopf("No model stored")
-      }
-      if (is.null(self$model$importance)) {
+      if (is.null(self$model$importance) & !is.null(self$model)) {
         mlr3misc::stopf("Set 'importance' to one of: {'TRUE', 'permute', 'random', 'anti'}.")
       }
 
@@ -135,11 +132,7 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
     #' Selected features are extracted from the model slot `frame$var`.
     #' @return `character()`.
     selected_features = function() {
-      if (is.null(self$model)) {
-        mlr3misc::stopf("No model stored")
-      }
-
-      if (is.null(self$model$var.used)) {
+      if (is.null(self$model$var.used) & !is.null(self$model)) {
         mlr3misc::stopf("Set 'var.used' to one of: {'all.trees', 'by.tree'}.")
       }
 
@@ -150,11 +143,7 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
     #' OOB error extracted from the model slot `err.rate`.
     #' @return `numeric()`.
     oob_error = function() {
-      if (is.null(self$model)) {
-        mlr3misc::stopf("No model stored")
-      }
-
-      self$model$err.rate
+      self$model$err.rate[self$model$ntree]
     }
   ),
 

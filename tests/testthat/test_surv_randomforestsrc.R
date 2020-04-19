@@ -14,11 +14,7 @@ test_that("autotest", {
 test_that("importance/selected", {
   set.seed(1)
   task = tsk("rats")
-  learner = lrn("surv.rfsrc")
-  learner$param_set$values$estimator = "kaplan"
-  expect_error(learner$importance(), "No model stored")
-  expect_error(learner$selected_features(), "No model stored")
-  expect_error(learner$oob_error(), "No model stored")
+  learner = lrn("surv.rfsrc", estimator = "kaplan")
   learner$train(task)
   expect_error(learner$importance(), "Set 'importance'")
   expect_error(learner$selected_features(), "Set 'var.used'")
