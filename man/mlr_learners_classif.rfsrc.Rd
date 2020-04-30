@@ -74,7 +74,8 @@ Creates a new instance of this \link[R6:R6Class]{R6} class.
 \if{html}{\out{<a id="method-importance"></a>}}
 \if{latex}{\out{\hypertarget{method-importance}{}}}
 \subsection{Method \code{importance()}}{
-The importance scores are extracted from the model slot \code{variable.importance}.
+The importance scores are extracted from the model slot \code{importance}, returned for
+'all'.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerClassifRandomForestSRC$importance()}\if{html}{\out{</div>}}
 }
@@ -87,7 +88,7 @@ Named \code{numeric()}.
 \if{html}{\out{<a id="method-selected_features"></a>}}
 \if{latex}{\out{\hypertarget{method-selected_features}{}}}
 \subsection{Method \code{selected_features()}}{
-Selected features are extracted from the model slot \code{frame$var}.
+Selected features are extracted from the model slot \code{var.used}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LearnerClassifRandomForestSRC$selected_features()}\if{html}{\out{</div>}}
 }

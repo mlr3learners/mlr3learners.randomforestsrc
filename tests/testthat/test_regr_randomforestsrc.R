@@ -4,10 +4,10 @@ test_that("autotest", {
   learner = lrn("regr.rfsrc")
   learner$param_set$values = list(
     importance = "random", na.action = "na.impute",
-    var.used = "all.trees", do.trace = TRUE)
+    do.trace = TRUE)
   expect_learner(learner)
   set.seed(1)
-  result = run_autotest(learner)
+  result = run_autotest(learner, exclude = "single")
   expect_true(result, info = result$error)
 })
 

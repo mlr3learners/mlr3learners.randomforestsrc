@@ -95,8 +95,10 @@ LearnerClassifRandomForestSRC = R6Class("LearnerClassifRandomForestSRC",
         feature_types = c("logical", "integer", "numeric", "factor"),
         predict_types = c("response", "prob"),
         param_set = ps,
+        # selected features is possible but there's a bug somewhere in rfsrc so that the model
+        # can be trained but not predicted. so public method retained but property not included
         properties = c(
-          "weights", "missings", "importance", "oob_error", "selected_features",
+          "weights", "missings", "importance", "oob_error",
           "twoclass", "multiclass"),
         man = "mlr3learners.randomforestsrc::mlr_learners_classif.rfsrc"
       )
@@ -143,14 +145,15 @@ LearnerClassifRandomForestSRC = R6Class("LearnerClassifRandomForestSRC",
       }
 
       mlr3misc::invoke(randomForestSRC::rfsrc,
-        formula = task$formula(), data = task$data(),
+        formula = task$formula(), data = as.data.frame(task$data()),
         .args = pv)
     },
 
     .predict = function(task) {
-      newdata = task$data(cols = task$feature_names)
+      newdata = as.data.frame(task$data(cols = task$feature_names))
       pars = self$param_set$get_values(tags = "predict")
-      pred = mlr3misc::invoke(predict, self$model,
+      pred = mlr3misc::invoke(predict,
+        object = self$model,
         newdata = newdata,
         .args = pars)
 

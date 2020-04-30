@@ -95,7 +95,9 @@ LearnerRegrRandomForestSRC = R6Class("LearnerRegrRandomForestSRC",
         feature_types = c("logical", "integer", "numeric", "factor"),
         predict_types = "response",
         param_set = ps,
-        properties = c("weights", "missings", "importance", "oob_error", "selected_features"),
+        # selected features is possible but there's a bug somewhere in rfsrc so that the model
+        # can be trained but not predicted. so public method retained but property not included
+        properties = c("weights", "missings", "importance", "oob_error"),
         man = "mlr3learners.randomforestsrc::mlr_learners_regr.rfsrc"
       )
     },

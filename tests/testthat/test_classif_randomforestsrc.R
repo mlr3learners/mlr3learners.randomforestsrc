@@ -4,7 +4,7 @@ test_that("autotest", {
   learner = lrn("classif.rfsrc")
   learner$param_set$values = list(
     importance = "random", na.action = "na.impute",
-    var.used = "all.trees", do.trace = TRUE)
+    do.trace = TRUE)
   expect_learner(learner)
   set.seed(1)
   result = run_autotest(learner)
