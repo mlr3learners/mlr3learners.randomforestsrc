@@ -27,8 +27,8 @@ Suggests:
     rmarkdown,
     testthat
 Remotes:
-    mlr-org/mlr3proba,
-    mlr-org/mlr3
+    mlr-org/mlr3,
+    mlr-org/mlr3proba
 Encoding: UTF-8
 NeedsCompilation: no
 Roxygen: list(markdown = TRUE)

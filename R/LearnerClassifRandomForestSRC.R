@@ -95,8 +95,9 @@ LearnerClassifRandomForestSRC = R6Class("LearnerClassifRandomForestSRC",
         feature_types = c("logical", "integer", "numeric", "factor"),
         predict_types = c("response", "prob"),
         param_set = ps,
-        properties = c("weights", "missings", "importance", "oob_error", "selected_features",
-                       "twoclass", "multiclass"),
+        properties = c(
+          "weights", "missings", "importance", "oob_error", "selected_features",
+          "twoclass", "multiclass"),
         man = "mlr3learners.randomforestsrc::mlr_learners_classif.rfsrc"
       )
     },
@@ -142,17 +143,16 @@ LearnerClassifRandomForestSRC = R6Class("LearnerClassifRandomForestSRC",
       }
 
       mlr3misc::invoke(randomForestSRC::rfsrc,
-                       formula = task$formula(), data = task$data(),
-                       .args = pv)
+        formula = task$formula(), data = task$data(),
+        .args = pv)
     },
 
     .predict = function(task) {
-
       newdata = task$data(cols = task$feature_names)
       pars = self$param_set$get_values(tags = "predict")
       pred = mlr3misc::invoke(predict, self$model,
-                              newdata = newdata,
-                              .args = pars)
+        newdata = newdata,
+        .args = pars)
 
       if (self$predict_type == "response") {
         PredictionClassif$new(task = task, response = pred$class)
