@@ -3,7 +3,7 @@
 #' @name mlr_learners_regr.rfsrc
 #'
 #' @description
-#' A [mlr3proba::LearnerRegr] implementing rfsrc from package
+#' A [mlr3::LearnerRegr] implementing rfsrc from package
 #'   \CRANpkg{randomForestSRC}.
 #' Calls [randomForestSRC::rfsrc()].
 #'
