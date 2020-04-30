@@ -111,7 +111,7 @@ LearnerClassifRandomForestSRC = R6Class("LearnerClassifRandomForestSRC",
         mlr3misc::stopf("Set 'importance' to one of: {'TRUE', 'permute', 'random', 'anti'}.")
       }
 
-      sort(self$model$importance[,1], decreasing = TRUE)
+      sort(self$model$importance[, 1], decreasing = TRUE)
     },
 
     #' @description
