@@ -5,7 +5,7 @@
 \alias{LearnerRegrRandomForestSRC}
 \title{Regression Random Forest SRC Learner}
 \description{
-A \link[mlr3proba:LearnerRegr]{mlr3proba::LearnerRegr} implementing rfsrc from package
+A \link[mlr3:LearnerRegr]{mlr3::LearnerRegr} implementing rfsrc from package
 \CRANpkg{randomForestSRC}.
 Calls \code{\link[randomForestSRC:rfsrc]{randomForestSRC::rfsrc()}}.
 }
