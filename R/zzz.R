@@ -13,6 +13,8 @@ register_mlr3 = function(libname, pkgname) {
   x = utils::getFromNamespace("mlr_learners", ns = "mlr3")
 
   # add the learner to the dictionary
+  x$add("regr.rfsrc", LearnerRegrRandomForestSRC)
+  x$add("classif.rfsrc", LearnerClassifRandomForestSRC)
   x$add("surv.rfsrc", LearnerSurvRandomForestSRC)
 }
 

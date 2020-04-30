@@ -1,35 +1,24 @@
-#' @title Survival Random Forest SRC Learner
+#' @title Regression Random Forest SRC Learner
 #'
-#' @name mlr_learners_surv.rfsrc
+#' @name mlr_learners_regr.rfsrc
 #'
 #' @description
-#' A [mlr3proba::LearnerSurv] implementing rfsrc from package
+#' A [mlr3proba::LearnerRegr] implementing rfsrc from package
 #'   \CRANpkg{randomForestSRC}.
 #' Calls [randomForestSRC::rfsrc()].
 #'
-#' @details
-#' [randomForestSRC::predict.rfsrc()] returns both cumulative hazard function (chf) and
-#' survival function (surv) but uses different estimators to derive these. `chf` uses a
-#' bootstrapped Nelson-Aalen estimator, (Ishwaran, 2008) whereas `surv` uses a bootstrapped
-#' Kaplan-Meier estimator. The choice of which estimator to use is given by the extra
-#' `estimator` hyper-parameter, default is `nelson`.
-#'
-#' @templateVar id surv.rfsrc
+#' @templateVar id regr.rfsrc
 #' @template section_dictionary_learner
 #'
 #' @references
-#' Ishwaran H, Kogalur UB, Blackstone EH, Lauer MS, others (2008).
-#' “Random survival forests.” The annals of applied statistics, 2(3), 841–860.
-#'
 #' Breiman L (2001). “Random Forests.”
 #' Machine Learning, 45(1), 5–32. ISSN 1573-0565, doi: 10.1023/A:1010933404324.
 #'
 #' @template seealso_learner
 #' @template example
 #' @export
-# <Adapt the name to your learner. For regression learners inherit = LearnerRegr>
-LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
-  inherit = LearnerSurv,
+LearnerRegrRandomForestSRC = R6Class("LearnerRegrRandomForestSRC",
+  inherit = LearnerRegr,
 
   public = list(
     #' @description
@@ -42,8 +31,8 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
           ParamInt$new(id = "nodesize", default = 15L, lower = 1L, tags = "train"),
           ParamInt$new(id = "nodedepth", lower = 1L, tags = "train"),
           ParamFct$new(
-            id = "splitrule", levels = c("logrank", "bs.gradient", "logrankscore"),
-            default = "logrank", tags = "train"),
+            id = "splitrule", levels = c("mse", "quantile.regr", "la.quantile.regr"),
+            default = "mse", tags = "train"),
           ParamInt$new(id = "nsplit", lower = 0, default = 10, tags = "train"),
           ParamFct$new(
             id = "importance", default = "FALSE",
@@ -96,23 +85,18 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
           ParamFct$new(
             id = "outcome", default = "train", levels = c("train", "test"),
             tags = "predict"),
-          ParamInt$new(id = "ptn.count", default = 0L, lower = 0L, tags = "predict"),
-          ParamFct$new(
-            id = "estimator", default = "nelson", levels = c("nelson", "kaplan"),
-            tags = c("predict", "distr"))
+          ParamInt$new(id = "ptn.count", default = 0L, lower = 0L, tags = "predict")
         )
       )
 
       super$initialize(
-        id = "surv.rfsrc",
+        id = "regr.rfsrc",
         packages = "randomForestSRC",
         feature_types = c("logical", "integer", "numeric", "factor"),
-        predict_types = c("crank", "distr"),
+        predict_types = "response",
         param_set = ps,
-        # selected features is possible but there's a bug somewhere in rfsrc so that the model
-        # can be trained but not predicted. so public method retained but property not included
-        properties = c("weights", "missings", "importance", "oob_error"),
-        man = "mlr3learners.randomforestsrc::mlr_learners_surv.rfsrc"
+        properties = c("weights", "missings", "importance", "oob_error", "selected_features"),
+        man = "mlr3learners.randomforestsrc::mlr_learners_regr.rfsrc"
       )
     },
 
@@ -163,35 +147,14 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
     .predict = function(task) {
 
       newdata = task$data(cols = task$feature_names)
+      pars = self$param_set$get_values(tags = "predict")
 
-      pars_predict = self$param_set$get_values(tags = "predict")
-      pars_distr = self$param_set$get_values(tags = "distr")
-      pars_predict = pars_predict[names(pars_predict) %nin% names(pars_distr)]
-
-      p = mlr3misc::invoke(predict, object = self$model, newdata = newdata, .args = pars_predict)
-
-      # rfsrc uses Nelson-Aalen in chf and Kaplan-Meier for survival, as these
-      # don't give equivalent results one must be chosen and the relevant functions are transformed
-      # as required.
-
-      # default estimator is nelson, hence nelson selected if NULL
-      estimator = if (is.null(pars_predict$estimator)) "nelson" else pars_predict$estimator
-
-      cdf = if (estimator == "nelson") 1 - exp(-p$chf) else 1 - p$survival
-
-      # define WeightedDiscrete distr6 object from predicted survival function
-      x = rep(list(data = data.frame(x = self$model$time.interest, cdf = 0)), task$nrow)
-      for (i in 1:task$nrow) {
-        x[[i]]$cdf = cdf[i, ]
-      }
-
-      distr = distr6::VectorDistribution$new(
-        distribution = "WeightedDiscrete", params = x,
-        decorators = c("CoreStatistics", "ExoticStatistics"))
-
-      crank = as.numeric(sapply(x, function(y) sum(y[, 1] * c(y[, 2][1], diff(y[, 2])))))
-
-      PredictionSurv$new(task = task, crank = crank, distr = distr)
+      PredictionRegr$new(task = task,
+                         response = mlr3misc::invoke(predict,
+                                                     object = self$model,
+                                                     newdata = newdata,
+                                                     .args = pars)$predicted
+      )
     }
   )
 )
