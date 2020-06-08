@@ -158,9 +158,9 @@ LearnerClassifRandomForestSRC = R6Class("LearnerClassifRandomForestSRC",
         .args = pars)
 
       if (self$predict_type == "response") {
-        PredictionClassif$new(task = task, response = pred$class)
+        mlr3::PredictionClassif$new(task = task, response = pred$class)
       } else {
-        PredictionClassif$new(task = task, prob = pred$predicted)
+        mlr3::PredictionClassif$new(task = task, prob = pred$predicted)
       }
     }
   )
