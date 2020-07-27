@@ -180,7 +180,7 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
       cdf = if (estimator == "nelson") 1 - exp(-p$chf) else 1 - p$survival
 
       # define WeightedDiscrete distr6 object from predicted survival function
-      x = rep(list(data = data.frame(x = self$model$time.interest, cdf = 0)), task$nrow)
+      x = rep(list(x = self$model$time.interest, cdf = 0), task$nrow)
       for (i in 1:task$nrow) {
         x[[i]]$cdf = cdf[i, ]
       }
@@ -189,7 +189,7 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
         distribution = "WeightedDiscrete", params = x,
         decorators = c("CoreStatistics", "ExoticStatistics"))
 
-      crank = as.numeric(sapply(x, function(y) sum(y[, 1] * c(y[, 2][1], diff(y[, 2])))))
+      crank = as.numeric(sapply(x, function(y) sum(y$x * c(y$cdf[1], diff(y$cdf)))))
 
       mlr3proba::PredictionSurv$new(task = task, crank = crank, distr = distr)
     }
