@@ -180,7 +180,7 @@ LearnerSurvRandomForestSRC = R6Class("LearnerSurvRandomForestSRC",
       cdf = if (estimator == "nelson") 1 - exp(-p$chf) else 1 - p$survival
 
       # define WeightedDiscrete distr6 object from predicted survival function
-      x = rep(list((x = self$model$time.interest, cdf = 0)), task$nrow)
+      x = rep(list(list(x = self$model$time.interest, cdf = 0)), task$nrow)
       for (i in 1:task$nrow) {
         x[[i]]$cdf = cdf[i, ]
       }
